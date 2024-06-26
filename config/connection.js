@@ -6,15 +6,14 @@ const state={
 module.exports.connect=function(done){
     const url='mongodb://localhost:27017'
     const dbname='shopping'
-    console.log("poda panni");
+  
 
     mongoClient.connect(url,(err,data)=>{
-        console.log("hsi");
         if(err) return done(err)
        
         done()
    }).catch((err)=>{
-    console.log({err});
+    console.error(err)
    }).then((data)=>{
     state.db=data.db(dbname)
    })
