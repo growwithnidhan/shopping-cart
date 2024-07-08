@@ -6,26 +6,23 @@
           <div class="card">
             <img
               class="card-img-top"
-              src="/product-images/{{this._id}}.jpg"
+              src="/product-images/{{this.product._id}}.jpg"
               alt="Card image cap"
               
             />
             <div class="card-body">
-              <h5 class="card-title">{{this.Name}}</h5>
-              <p class="card-text">Rs.{{this.Price}}</p>
+              <h5 class="card-title">{{this.product.Name}}</h5>
+              <p class="card-text">Rs.{{this.product.Price}}</p>
+              <p class="card-text">Quantity: {{this.quantity}}</p>
               <p class="card-text">{{this.Description}}</p>
 
-              <button
-                onclick="addToCart('{{this._id}}')"
-                class="btn btn-primary mt-auto"
-              >Add to cart</button>
             </div>
           </div>
-
         </div>
-      {{/each}}
-
+        {{/each}}
     </div>
   </div>
 </section>
-
+<script>
+    
+</script>

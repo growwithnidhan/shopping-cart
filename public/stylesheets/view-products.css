@@ -1,0 +1,18 @@
+.card {
+    height: 100%; /* Ensure the card takes up the full height of its container */
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Ensure the content is spaced out evenly */
+}
+
+.card-img-top {
+    object-fit: cover; /* Ensure the image covers the specified height */
+    height: 220px; /* Adjust to fit your layout */
+    width: 100%; /* Ensure the image*/
+}
