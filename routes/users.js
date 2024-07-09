@@ -42,7 +42,7 @@ router.post('/remove-cart-product',removeCartitem)
 router.get('/place-order',verifyLogin,placeorder)
 router.post('/place-order',placeorderpost)
 router.get('/order-placed',orderplaced)
-router.get('/orders',orders)
+router.get('/orders',verifyLogin,orders)
 router.get('/view-order-products/:id',vieworderproducts)
 
 

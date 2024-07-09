@@ -260,12 +260,22 @@ module.exports = {
             },
           },
         ])
-        .toArray(); 
-        console.log(total[0].total)
-
-      resolve(total[0].total);
+        .toArray();
+        if (total && total.length > 0 && total[0].total !== undefined) {
+          if (total[0].total === 0) {
+            resolve('Cart is empty');
+          } else {
+            resolve(total[0].total);
+          }
+        } else {
+          resolve('Cart is empty');
+        }
+      
+      
     });
   },
+        
+
   placeOrder: (order, products, total) => {
     return new Promise((resolve, reject) => {
       console.log(order, products, total);
@@ -302,9 +312,11 @@ module.exports = {
       resolve(cart.products);
     });
   },
-  getUserOrders:(userId)=>{
+  getUserOrders:(userId) => {
+    console.log("🚀 ~ userId:", userId)
+    
     return new Promise(async(resolve,reject)=>{
-      let order=await db.get().collection(collection.ORDER_COLLECTION).findOne({userId:ObjectId.createFromHexString(userId)}).toArray()
+      let order=await db.get().collection(collection.ORDER_COLLECTION).find({userId:ObjectId.createFromHexString(userId)}).toArray()
       resolve(order)
     })
     

@@ -46,7 +46,7 @@ module.exports.loginpost = (req, res) => {
     if (response.status) {
       console.log(response.status);
       req.session.loggedIn = true;
-      req.session.user = response.user;
+      req.session.user = response.user
       res.redirect("/");
     } else {
       req.session.loginErr = "Invalid username or password";
@@ -100,13 +100,16 @@ module.exports.placeorderpost = async (req, res, next) => {
 module.exports.orderplaced = (req, res, next) => {
   res.render("user/order-placed", { user: req.session.user });
 };
-module.exports.orders = (req, res, next) => {
-  let orders = userHelpers.getUserOrders(req.body.session);
+module.exports.orders = async(req, res, next) => {
+  console.log(req.session.user)
+  let orders = await userHelpers.getUserOrders(req.session.user._id);
+  console.log("🚀 ~ orders:", orders)
   res.render("user/orders", { orders, user: req.session.user });
 };
 module.exports.vieworderproducts=async(req,res,next)=>{
   let products= await userHelpers.getOrderProducts(req.params.id)
   res.render('user/view-order-products',{products,user:req.session.user})
+  
 
 
 }
