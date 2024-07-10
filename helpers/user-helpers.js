@@ -289,7 +289,8 @@ module.exports = {
         userId: ObjectId.createFromHexString(order.userId),
         paymentMethod: order["payment-method"],
         totalAmount: total,
-        status: status,
+        products,
+        status,
         date: new Date(),
       };
       db.get()
@@ -325,12 +326,12 @@ module.exports = {
   getOrderProducts:(orderId)=>{
     console.log({orderId});
     return new Promise(async (resolve, reject) => {
-      let cartItems = await db
+      let orderItems = await db
         .get()
-        .collection(collection.CART_COLLECTION)
+        .collection(collection.ORDER_COLLECTION)
         .aggregate([
           {
-            $match: { _id: ObjectId.createFromHexString(orderId) },
+            $match: { _id : ObjectId.createFromHexString(orderId) },
           },
           {
             $unwind: "$products",
@@ -358,8 +359,10 @@ module.exports = {
           },
         ])
         .toArray();
+        console.log("ivde onnum kitunilla bro why?",orderItems)
+        
 
-      resolve(cartItems);
+      resolve(orderItems);
     });
 
   }
