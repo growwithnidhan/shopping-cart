@@ -82,3 +82,4 @@ module.exports.editproductpost = async (req, res, next) => {
     next(err); // Handle errors
   }
 };
+
