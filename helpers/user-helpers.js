@@ -2,6 +2,11 @@ const db = require("../config/connection");
 const collection = require("../config/collections");
 const bcrypt = require("bcrypt");
 const { ObjectId } = require("mongodb");
+const Razorpay = require('razorpay')
+var instance = new Razorpay({
+  key_id: 'rzp_test_EajIQ7rZ7E7y6j',
+  key_secret: 'bNSdUB3yYpjlfam8w34TfdTb',
+});
 
 module.exports = {
   doSignup: (userData) => {
@@ -278,7 +283,7 @@ module.exports = {
 
   placeOrder: (order, products, total) => {
     return new Promise((resolve, reject) => {
-      console.log(order, products, total);
+      console.log("ivde ano",order, products, total);
       let status = order["payment-method"] === "COD" ? "placed" : "pending";
       let orderObj = {
         deliveryDetails: {
@@ -297,10 +302,12 @@ module.exports = {
         .collection(collection.ORDER_COLLECTION)
         .insertOne(orderObj)
         .then((response) => {
+          const insertedId=response.insertedId;
           db.get()
             .collection(collection.CART_COLLECTION)
             .deleteOne({ user: ObjectId.createFromHexString(order.userId) });
-            resolve({status:true})
+
+            resolve(insertedId)
         });
     });
   },
@@ -359,12 +366,11 @@ module.exports = {
           },
         ])
         .toArray();
-        console.log("ivde onnum kitunilla bro why?",orderItems)
         
 
       resolve(orderItems);
     });
 
-  }
-
+  },
+  
 };

@@ -1,6 +1,7 @@
 const { response } = require("express");
 const productHelpers = require("../helpers/product-helpers");
 const userHelpers = require("../helpers/user-helpers");
+const paymentHelpers = require("../helpers/payment-helpers")
 
 module.exports.homepage = async function (req, res, next) {
   let user = req.session.user;
@@ -89,14 +90,27 @@ module.exports.placeorder = async (req, res, next) => {
   res.render("user/place-order", { total, user: req.session.user });
 };
 module.exports.placeorderpost = async (req, res, next) => {
-  let totalPrice = await userHelpers.getTotalAmount(req.body.userId);
-  let products = await userHelpers.getCartList(req.body.userId);
-  let order = await userHelpers.placeOrder(req.body);
-  userHelpers.placeOrder(req.body, products, totalPrice).then((response) => {
-    console.log(response);
-    res.json({ status: true, order });
-  });
+  try {
+    let totalPrice = await userHelpers.getTotalAmount(req.body.userId);
+    let products = await userHelpers.getCartList(req.body.userId);
+    
+    let orderId = await userHelpers.placeOrder(req.body, products, totalPrice);
+
+    if (req.body['payment-method'] === 'COD') {
+      res.json({ COD_success: true, order: orderId });
+    } else {
+      paymentHelpers.generateRazorpay(orderId, totalPrice).then((response) => {
+        res.json(response);
+      }).catch((err) => {
+        res.status(500).json({ error: "Error generating Razorpay order" });
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Error placing order" });
+  }
 };
+
+
 module.exports.orderplaced = (req, res, next) => {
   res.render("user/order-placed", { user: req.session.user });
 };
@@ -109,3 +123,9 @@ module.exports.vieworderproducts = async (req, res, next) => {
   let products = await userHelpers.getOrderProducts(req.params.id);
   res.render("user/view-order-products", { products, user: req.session.user });
 };
+module.exports.verifypayment=(req,res,next)=>{
+  console.log(req.body)
+  paymentHelpers.verifyPayment(req.body).then(()=>{
+    
+  })
+}

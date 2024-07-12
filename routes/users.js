@@ -17,7 +17,8 @@ const {
   placeorderpost,
   orderplaced,
   orders,
-  vieworderproducts
+  vieworderproducts,
+  verifypayment
 } = require("../controllers/user-controller");
 const verifyLogin = (req, res, next) => {
   if (req.session.loggedIn) {
@@ -44,6 +45,7 @@ router.post('/place-order',placeorderpost)
 router.get('/order-placed',orderplaced)
 router.get('/orders',verifyLogin,orders)
 router.get('/view-order-products/:id',vieworderproducts)
+router.post('/verify-payment',verifypayment)
 
 
 
