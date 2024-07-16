@@ -47,7 +47,8 @@ app.use(session({
   secret: 'key', // Replace with a strong, secure key for session encryption
   cookie: { maxAge: 12000000 }, // Session expiry time in milliseconds (adjust as needed)
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie:{secure:false}
 }));
 
 db.connect((err) => {
