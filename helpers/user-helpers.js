@@ -2,10 +2,10 @@ const db = require("../config/connection");
 const collection = require("../config/collections");
 const bcrypt = require("bcrypt");
 const { ObjectId } = require("mongodb");
-const Razorpay = require('razorpay')
+const Razorpay = require("razorpay");
 var instance = new Razorpay({
-  key_id: 'rzp_test_EajIQ7rZ7E7y6j',
-  key_secret: 'bNSdUB3yYpjlfam8w34TfdTb',
+  key_id: "rzp_test_EajIQ7rZ7E7y6j",
+  key_secret: "bNSdUB3yYpjlfam8w34TfdTb",
 });
 
 module.exports = {
@@ -16,8 +16,12 @@ module.exports = {
       db.get()
         .collection(collection.USER_COLLECTION)
         .insertOne(userData)
-        .then((data) => {
-          resolve(data.insertedId);
+        .then(async (data) => {
+          user = db
+            .get()
+            .collection(collection.USER_COLLECTION)
+            .findOne({ _id: data.insertedId });
+          resolve(user);
         });
     });
   },
@@ -150,6 +154,7 @@ module.exports = {
     });
   },
   getCartcount: (userId) => {
+    console.log("ivde", userId);
     return new Promise(async (resolve, reject) => {
       let count = 0;
       let cart = await db
@@ -266,24 +271,21 @@ module.exports = {
           },
         ])
         .toArray();
-        if (total && total.length > 0 && total[0].total !== undefined) {
-          if (total[0].total === 0) {
-            resolve('Cart is empty');
-          } else {
-            resolve(total[0].total);
-          }
+      if (total && total.length > 0 && total[0].total !== undefined) {
+        if (total[0].total === 0) {
+          resolve("Cart is empty");
         } else {
-          resolve('Cart is empty');
+          resolve(total[0].total);
         }
-      
-      
+      } else {
+        resolve("Cart is empty");
+      }
     });
   },
-        
 
   placeOrder: (order, products, total) => {
     return new Promise((resolve, reject) => {
-      console.log("ivde ano",order, products, total);
+      console.log("ivde ano", order, products, total);
       let status = order["payment-method"] === "COD" ? "placed" : "pending";
       let orderObj = {
         deliveryDetails: {
@@ -302,12 +304,12 @@ module.exports = {
         .collection(collection.ORDER_COLLECTION)
         .insertOne(orderObj)
         .then((response) => {
-          const insertedId=response.insertedId;
+          const insertedId = response.insertedId;
           db.get()
             .collection(collection.CART_COLLECTION)
             .deleteOne({ user: ObjectId.createFromHexString(order.userId) });
 
-            resolve(insertedId)
+          resolve(insertedId);
         });
     });
   },
@@ -320,25 +322,27 @@ module.exports = {
       resolve(cart.products);
     });
   },
-  getUserOrders:(userId) => {
-    console.log("🚀 ~ userId:", userId)
-    
-    return new Promise(async(resolve,reject)=>{
-      let order=await db.get().collection(collection.ORDER_COLLECTION).find({userId:ObjectId.createFromHexString(userId)}).toArray()
-      resolve(order)
-    })
-    
+  getUserOrders: (userId) => {
+    console.log("🚀 ~ userId:", userId);
 
+    return new Promise(async (resolve, reject) => {
+      let order = await db
+        .get()
+        .collection(collection.ORDER_COLLECTION)
+        .find({ userId: ObjectId.createFromHexString(userId) })
+        .toArray();
+      resolve(order);
+    });
   },
-  getOrderProducts:(orderId)=>{
-    console.log({orderId});
+  getOrderProducts: (orderId) => {
+    console.log({ orderId });
     return new Promise(async (resolve, reject) => {
       let orderItems = await db
         .get()
         .collection(collection.ORDER_COLLECTION)
         .aggregate([
           {
-            $match: { _id : ObjectId.createFromHexString(orderId) },
+            $match: { _id: ObjectId.createFromHexString(orderId) },
           },
           {
             $unwind: "$products",
@@ -366,11 +370,8 @@ module.exports = {
           },
         ])
         .toArray();
-        
 
       resolve(orderItems);
     });
-
   },
-  
 };
