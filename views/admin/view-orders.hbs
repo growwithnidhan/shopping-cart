@@ -1,0 +1,54 @@
+<section>
+    <div class="contaier">
+        <table class="table mt-5">
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Mobile</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            {{#each orders}}
+            <tr>
+                <td>{{this.date}}</td>
+                <td>{{this.deliveryDetails.mobile}}</td>
+                <td>{{this.totalAmount}}</td>
+                <td>{{this.status}}</td>
+                <td>
+                    <form action="/admin/ship/{{this._id}}" method="post">
+                    <button type="submit" class="btn btn-primary">Ship</button>
+                    </form>
+                </td>
+            </tr>
+            {{/each}}
+
+
+            </tbody>
+
+        </table>
+
+
+    </div>
+</section>
+{{!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function shipOrder(orderId)
+    $.ajax({
+        url:'/admin/ship/'+orderId,
+        method:'post',
+        success:function(response) {
+        if (response.success) {
+          $('#status-' + orderId).text('shipped');
+        } else {
+          alert('Failed to update status');
+        }
+      },
+      error: function() {
+        alert('Failed to update status');
+      }
+    });
+  
+</script> --}}

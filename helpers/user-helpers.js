@@ -315,13 +315,23 @@ module.exports = {
   },
   getCartList: (userId) => {
     return new Promise(async (resolve, reject) => {
-      let cart = await db
-        .get()
-        .collection(collection.CART_COLLECTION)
-        .findOne({ user: ObjectId.createFromHexString(userId) });
-      resolve(cart.products);
+      try {
+        let cart = await db
+          .get()
+          .collection(collection.CART_COLLECTION)
+          .findOne({ user: ObjectId.createFromHexString(userId) });
+
+        if (cart && cart.products) {
+          resolve(cart.products);
+        } else {
+          resolve([]);
+        }
+      } catch (error) {
+        reject(error);
+      }
     });
   },
+
   getUserOrders: (userId) => {
     console.log("🚀 ~ userId:", userId);
 
@@ -374,4 +384,21 @@ module.exports = {
       resolve(orderItems);
     });
   },
+  changeStatus:(orderId)=>{
+    console.log("here it is:",orderId)
+    return new Promise((resolve,reject)=>{
+      db.get().collection(collection.ORDER_COLLECTION).updateOne({_id:ObjectId.createFromHexString(orderId)}
+      ,{
+        $set:{
+          status:'shipped'
+        }
+      }
+    )
+    }).then(()=>{
+      console.log(success);
+      resolve();
+    })
+
+  }
 };
+
