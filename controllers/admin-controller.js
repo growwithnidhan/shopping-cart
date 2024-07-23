@@ -1,7 +1,12 @@
 const productHelpers = require("../helpers/product-helpers");
+const adminHelpers = require("../helpers/admin-helpers");
+const collections = require("../config/collections");
+const userHelpers = require("../helpers/user-helpers");
+const { orders } = require("./user-controller");
 
 module.exports.viewproduct = function (req, res, next) {
-  productHelpers.getAllProducts()
+  productHelpers
+    .getAllProducts()
     .then((products) => {
       res.render("admin/view-products", { admin: true, products });
     })
@@ -22,7 +27,8 @@ module.exports.addproductpost = function (req, res, next) {
     console.log("No files found in the request");
   }
 
-  productHelpers.addProduct(req.body)
+  productHelpers
+    .addProduct(req.body)
     .then((result) => {
       console.log("Product added successfully with ID:", result);
       let Image = req.files.image;
@@ -47,7 +53,8 @@ module.exports.addproductpost = function (req, res, next) {
 module.exports.deleteproduct = (req, res, next) => {
   let proId = req.params.id;
   console.log("Deleting product with ID: " + proId);
-  productHelpers.deleteProduct(proId)
+  productHelpers
+    .deleteProduct(proId)
     .then(() => {
       res.redirect("/admin");
     })
@@ -83,3 +90,48 @@ module.exports.editproductpost = async (req, res, next) => {
   }
 };
 
+module.exports.adminloginpage = (req, res) => {
+  if (req.session.admin && req.session.adminLoggedIn) {
+    res.redirect("/admin");
+  } else {
+    res.render("admin/admin-login", { loginErr: req.session.adminLoginErr });
+    req.session.adminLoginErr = false;
+  }
+};
+
+module.exports.adminloginpost = (req, res) => {
+  adminHelpers.doLogin(req.body).then((response) => {
+    if (response.status) {
+      req.session.admin = response.admin;
+      req.session.adminLoggedIn = true;
+      console.log("set ayi");
+      res.redirect("/admin");
+    } else {
+      req.session.adminLoginErr = "Invalid username or password";
+      res.redirect("/admin/admin-login");
+    }
+  });
+};
+module.exports.adminlogout = (req, res) => {
+  req.session.admin = null;
+  req.session.adminLoggedIn = false;
+  res.redirect("/admin/admin-logout");
+};
+module.exports.viewallorders = async (req, res, next) => {
+  try {
+    let orders = await adminHelpers.getAllOrders();
+    res.render("admin/view-orders", { admin: true, orders });
+  } catch (err) {
+    next(err);
+  }
+};
+module.exports.shiporder = (req, res, next) => {
+  console.log('hai')
+  try {
+    userHelpers.changeStatus(req.params.id).then((response) => {
+      res.json({success:true})
+    });
+  } catch (err) {
+    next(err);
+  }
+};
