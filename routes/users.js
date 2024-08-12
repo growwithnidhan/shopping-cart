@@ -21,7 +21,7 @@ const {
   verifypayment
 } = require("../controllers/user-controller");
 const verifyLogin = (req, res, next) => {
-  if (req.session.loggedIn) {
+  if (req.session.user && req.session.userLoggedIn) {
     next();
   } else {
     res.redirect("/login");
